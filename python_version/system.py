@@ -31,7 +31,7 @@ class system:
             star.tail = np.array([star.position])
 
 
-    def update_system(self):
+    def update(self):
         resultant_accelerations = []
         for star in self.stars:
             resultant_acceleration = np.zeros(star.position.shape)
@@ -42,7 +42,7 @@ class system:
                     resultant_acceleration -= acceleration
             resultant_accelerations.append(resultant_acceleration)
         for i in range(len(self.stars)):
-            self.stars[i].update_star(np.array(resultant_accelerations[i]), self.delta_t)
+            self.stars[i].update(np.array(resultant_accelerations[i]), self.delta_t)
 
     def show_stars(self):
         for star in self.stars:

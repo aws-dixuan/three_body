@@ -11,14 +11,14 @@ class star:
         self.track_length = track_length
         self.tail = np.array([self.position])
 
-    def update_star(self, acceleration, delta_t):
+    def update(self, acceleration, delta_t):
         increment = delta_t * acceleration / 2
         self.velocity += increment
         self.position += self.velocity * delta_t
         self.velocity += increment
         self.tail = np.append(self.tail, [self.position], axis=0)
         if len(self.tail) > self.track_length:
-            self.tail = self.tail[1:]
+            self.tail = self.tail[-self.track_length:]
 
     def plot(self):
         return self.position, self.radius, self.tail

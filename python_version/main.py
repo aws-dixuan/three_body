@@ -12,9 +12,9 @@ stars.append(star1)
 star2 = star(100.5, [-10.0, -10.0, 7.0], [2.3, -0.9, -3.0], tail_length)
 stars.append(star2)
 star3 = star(130.2, [10.0, -10.0, -3.0], [2.2, 1.8, 8.0], tail_length)
-stars.append(star3)
+# stars.append(star3)
 star4 = star(0.3, [50.0, -70.0, 0.0], [0.0, 0.0, 0.0], tail_length)
-stars.append(star4)
+# stars.append(star4)
 mySystem = system(stars, delta_t=delta_t)
 if threeD:
     ax = plt.subplot(projection='3d', proj_type='persp')   # , proj_type='ortho'
@@ -37,7 +37,7 @@ def animate(i):
     for star in mySystem.stars:
         position, radius, tail = star.plot()
         if threeD:
-            ax.scatter(position[0], position[1], position[2], s=20*radius**2)
+            ax.scatter(position[0], position[1], position[2], s=20 * radius ** 2)
             ax.plot3D(tail[:, 0], tail[:, 1], tail[:, 2])
             # hide frame
             ax.set_axis_off()
@@ -61,7 +61,7 @@ def animate(i):
     # background color
     # ax.set_facecolor('black')
     # plt.figure(facecolor='black')
-    mySystem.update_system()
+    mySystem.update()
 
 
 ani = FuncAnimation(plt.gcf(), animate, interval=10)
