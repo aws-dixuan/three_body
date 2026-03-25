@@ -1,49 +1,71 @@
+"""N-body gravitational system with center-of-mass frame correction."""
+
+from __future__ import annotations
+
 import numpy as np
+from numpy.typing import NDArray
 
-# F = G * m1 * m2 / (r^2)
-# G = 6.67430e-11  # N*m^2*kg*-2
-G = 6.67430e-1  # N*m^2*kg*-2
+from star import Star
 
-
-def dist(star1, star2):
-    dist_vector = star1.position - star2.position
-    norm = np.linalg.norm(dist_vector)
-    unit_dist = np.array(dist_vector / norm)
-    return unit_dist, norm
+# Scaled gravitational constant (not physical — tuned for visuals)
+G: float = 6.67430e-1
 
 
-class system:
-    def __init__(self, stars, delta_t):
-        self.stars = stars  # a list of class star
-        self.delta_t = delta_t
-        # set mass center position and speed to zero
-        total_momentum = np.zeros(stars[0].position.shape)
-        total_mass = 0
-        mass_center = np.zeros(stars[0].position.shape)
-        for star in stars:
-            total_momentum += star.mass * star.velocity
-            total_mass += star.mass
-            mass_center += star.mass * star.position
-        print(total_momentum)
-        for star in stars:
-            star.velocity -= total_momentum / total_mass
-            star.position -= mass_center / total_mass
-            star.tail = np.array([star.position])
+class System:
+    """A collection of Stars interacting via Newtonian gravity.
 
+    On construction the system shifts all bodies into the
+    center-of-mass rest frame so the view stays centered.
 
-    def update(self):
-        resultant_accelerations = []
+    Attributes:
+        stars: The bodies in the simulation.
+        dt: Integration timestep.
+    """
+
+    def __init__(self, stars: list[Star], dt: float = 0.1) -> None:
+        self.stars = stars
+        self.dt = dt
+        self._center_frame()
+
+    def update(self) -> None:
+        """Compute accelerations, advance every body one timestep."""
+        accelerations = self._compute_accelerations()
+        for star, acc in zip(self.stars, accelerations):
+            star.update(acc, self.dt)
+
+    def _center_frame(self) -> None:
+        """Shift to center-of-mass rest frame."""
+        total_mass = sum(s.mass for s in self.stars)
+        total_p = sum(s.mass * s.velocity for s in self.stars)
+        com = (
+            sum(s.mass * s.position for s in self.stars)
+            / total_mass
+        )
         for star in self.stars:
-            resultant_acceleration = np.zeros(star.position.shape)
+            star.velocity -= total_p / total_mass
+            star.position -= com
+            star.tail = np.array([star.position.copy()])
+
+    def _compute_accelerations(
+        self,
+    ) -> list[NDArray[np.float64]]:
+        """Return net gravitational acceleration per body."""
+        accelerations: list[NDArray[np.float64]] = []
+        for star in self.stars:
+            acc = np.zeros_like(star.position)
             for other in self.stars:
-                if other != star:
-                    unit_dist, norm = dist(star, other)
-                    acceleration = np.array(unit_dist * G * other.mass / norm)
-                    resultant_acceleration -= acceleration
-            resultant_accelerations.append(resultant_acceleration)
-        for i in range(len(self.stars)):
-            self.stars[i].update(np.array(resultant_accelerations[i]), self.delta_t)
+                if other is star:
+                    continue
+                d, r = _direction_and_distance(star, other)
+                acc -= d * G * other.mass / r
+            accelerations.append(acc)
+        return accelerations
 
-    def show_stars(self):
-        for star in self.stars:
-            print(star.plot())
+
+def _direction_and_distance(
+    a: Star, b: Star,
+) -> tuple[NDArray[np.float64], float]:
+    """Unit vector from b toward a, and scalar distance."""
+    delta = a.position - b.position
+    dist = float(np.linalg.norm(delta))
+    return delta / dist, dist
