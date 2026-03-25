@@ -5,7 +5,10 @@ from __future__ import annotations
 import numpy as np
 from numpy.typing import NDArray
 
-from star import Star
+try:
+    from python_version.star import Star
+except ImportError:
+    from star import Star
 
 # Scaled gravitational constant (not physical — tuned for visuals)
 G: float = 6.67430e-1

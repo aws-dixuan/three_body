@@ -1,0 +1,39 @@
+# Three-Body Screensaver Configuration
+
+[physics]
+G = 0.667430            # gravitational constant (scaled)
+dt = 0.005                  # integration timestep
+steps_per_frame = 10     # physics steps per rendered frame
+
+[display]
+fps = 60
+tail_length = 2000
+tail_thickness = 5        # line width for tail segments
+star_scale = 0.25         # multiplier for displayed star radius
+star_min_size = 7         # minimum star radius in pixels
+star_max_size = 30        # maximum star radius in pixels
+background = "000510"
+
+[zoom]
+margin = 2.3              # padding around bounding box (1.0 = tight)
+damping = 1e-3            # smoothing factor (lower = slower transitions)
+min_scale = 1.0           # minimum zoom (most zoomed out)
+max_scale = 50.0          # maximum zoom (most zoomed in)
+
+[[stars]]
+mass = 100.0
+position = [10.0, 10.0]
+velocity = [-4.0, -3.4]
+color = "0B7E9D"
+
+[[stars]]
+mass = 90.5
+position = [-10.0, -10.0]
+velocity = [2.3, -0.9]
+color = "D7B9A1"
+
+[[stars]]
+mass = 130.2
+position = [10.0, -10.0]
+velocity = [2.2, 1.8]
+color = "F9F6E5"
