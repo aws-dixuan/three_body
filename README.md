@@ -1,6 +1,7 @@
-# Three-Body Problem Simulation
+# Three-Body Screensaver
 
-Real-time N-body gravitational simulation with auto-zoom camera.
+A real-time gravitational three-body simulation, available as a
+macOS screensaver and a matplotlib visualization.
 
 ## Install Screensaver (macOS)
 
@@ -10,19 +11,24 @@ cd three_body
 ./install.sh
 ```
 
-Requires Python 3.10+, [uv](https://docs.astral.sh/uv/getting-started/installation/), and Xcode command line tools (`xcode-select --install`).
+Requires Xcode command line tools (`xcode-select --install`).
 
-After install:
-1. Open System Settings > Screen Saver
-2. Select "ThreeBodySaver"
-3. Test immediately: `open -a ScreenSaverEngine`
+After install, go to System Settings > Screen Saver and select
+"ThreeBodySaver". To test immediately:
 
-To customize colors, speed, zoom: edit
-`~/Library/Screen Savers/ThreeBodySaver.saver/Contents/Resources/config.toml`
+```bash
+open -a ScreenSaverEngine
+```
 
-To uninstall: `./uninstall.sh`
+To uninstall:
 
-## Simulation (matplotlib)
+```bash
+./uninstall.sh
+```
+
+## Matplotlib Simulation
+
+Interactive matplotlib version with 2D and 3D views.
 
 ```bash
 uv sync
@@ -30,7 +36,12 @@ uv run python python_version/main.py          # 2D
 uv run python python_version/main.py --3d     # 3D
 ```
 
-## Standalone Screensaver (no install)
+Requires [uv](https://docs.astral.sh/uv/getting-started/installation/).
+
+## Standalone Fullscreen (pygame)
+
+Runs fullscreen without installing as a system screensaver.
+Exits on any key, click, or mouse movement.
 
 ```bash
 uv sync --group screensaver
@@ -39,15 +50,61 @@ uv run python screensaver/fullscreen_saver.py
 
 ## Configuration
 
-Edit `screensaver/config.toml` to customize:
+Edit `screensaver/config.toml` to customize the simulation.
+For the installed screensaver, edit the copy at:
+`~/Library/Screen Savers/ThreeBodySaver.saver/Contents/Resources/config.toml`
 
-- `[physics]` — G, dt, steps_per_frame
-- `[display]` — fps, tail_length, star_scale, star_min/max_size, background (hex)
-- `[zoom]` — margin, damping, min/max_scale
-- `[[stars]]` — mass, position, velocity, color (6-digit hex)
+```toml
+[physics]
+G = 0.667430              # gravitational constant (scaled)
+dt = 0.005                # integration timestep
+steps_per_frame = 10      # substeps per rendered frame
 
-## How it works
+[display]
+fps = 60
+tail_length = 2000        # number of trail points
+star_scale = 0.25         # star body size multiplier
+star_min_size = 7         # min star radius (px)
+star_max_size = 30        # max star radius (px)
+background = "000510"     # 6-digit hex color
 
-Three stars interact via Newtonian gravity using velocity-Verlet
-integration in the center-of-mass rest frame. The camera auto-zooms
-with configurable damping to keep all stars in view.
+[zoom]
+margin = 2.3              # padding around bounding box
+damping = 1e-3            # zoom smoothing (lower = slower)
+min_scale = 1.0           # most zoomed out
+max_scale = 50.0          # most zoomed in
+
+[[stars]]
+mass = 100.0
+position = [10.0, 10.0]
+velocity = [-4.0, -3.4]
+color = "0B7E9D"
+```
+
+Add or remove `[[stars]]` sections to change the number of bodies.
+
+## Project Structure
+
+```
+three_body/
+├── python_version/          # matplotlib simulation
+│   ├── main.py              # entry point (2D/3D)
+│   ├── star.py              # Star class (numpy)
+│   └── system.py            # N-body system (numpy)
+├── screensaver/
+│   ├── config.toml          # shared configuration
+│   ├── fullscreen_saver.py  # pygame screensaver
+│   └── wrapper/
+│       └── main.m           # native macOS .saver (Obj-C)
+├── install.sh               # build & install .saver
+├── uninstall.sh
+└── pyproject.toml
+```
+
+## How It Works
+
+Three stars with different masses interact via Newtonian gravity
+(`F = G·m₁·m₂/r²`). Integration uses the velocity-Verlet (leapfrog)
+method. The system is shifted into the center-of-mass rest frame at
+startup so the view stays centered. An auto-zoom camera with
+configurable damping keeps all bodies in view.

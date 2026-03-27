@@ -2,7 +2,9 @@
 # Uninstall Three-Body Screensaver
 set -e
 SAVER="$HOME/Library/Screen Savers/ThreeBodySaver.saver"
-APP="/Applications/Three Body Screensaver.app"
-[ -d "$SAVER" ] && rm -rf "$SAVER" && echo "Removed $SAVER"
-[ -d "$APP" ] && rm -rf "$APP" && echo "Removed $APP"
-echo "Uninstalled."
+if [ -d "$SAVER" ]; then
+    rm -rf "$SAVER"
+    echo "Uninstalled ThreeBodySaver."
+else
+    echo "Not installed."
+fi
