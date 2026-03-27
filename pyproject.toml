@@ -16,11 +16,6 @@ three-body = "python_version.main:main"
 screensaver = [
     "pygame>=2.5",
 ]
-saver-bundle = [
-    "py2app>=0.28",
-    "pyobjc-framework-Cocoa>=10.0",
-    "pyobjc-framework-ScreenSaver>=10.0",
-]
 
 [build-system]
 requires = ["hatchling"]

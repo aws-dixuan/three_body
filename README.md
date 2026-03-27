@@ -2,36 +2,39 @@
 
 Real-time N-body gravitational simulation with auto-zoom camera.
 
-## Setup
+## Install Screensaver (macOS)
 
 ```bash
-uv sync
+git clone https://github.com/YOUR_USERNAME/three_body.git
+cd three_body
+./install.sh
 ```
+
+Requires Python 3.10+, [uv](https://docs.astral.sh/uv/getting-started/installation/), and Xcode command line tools (`xcode-select --install`).
+
+After install:
+1. Open System Settings > Screen Saver
+2. Select "ThreeBodySaver"
+3. Test immediately: `open -a ScreenSaverEngine`
+
+To customize colors, speed, zoom: edit
+`~/Library/Screen Savers/ThreeBodySaver.saver/Contents/Resources/config.toml`
+
+To uninstall: `./uninstall.sh`
 
 ## Simulation (matplotlib)
 
 ```bash
+uv sync
 uv run python python_version/main.py          # 2D
 uv run python python_version/main.py --3d     # 3D
 ```
 
-## Screen Saver (pygame)
-
-Fullscreen, exits on any key/click/mouse movement.
+## Standalone Screensaver (no install)
 
 ```bash
 uv sync --group screensaver
 uv run python screensaver/fullscreen_saver.py
-uv run python screensaver/fullscreen_saver.py --config path/to/custom.toml
-```
-
-## Native .saver bundle (macOS System Settings)
-
-```bash
-uv sync --group saver-bundle
-cd screensaver
-uv run python setup.py py2app
-cp -r dist/ThreeBodySaver.saver ~/Library/Screen\ Savers/
 ```
 
 ## Configuration
@@ -39,7 +42,7 @@ cp -r dist/ThreeBodySaver.saver ~/Library/Screen\ Savers/
 Edit `screensaver/config.toml` to customize:
 
 - `[physics]` — G, dt, steps_per_frame
-- `[display]` — fps, tail_length, star_scale, star_min/max_size, background
+- `[display]` — fps, tail_length, star_scale, star_min/max_size, background (hex)
 - `[zoom]` — margin, damping, min/max_scale
 - `[[stars]]` — mass, position, velocity, color (6-digit hex)
 
